@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Jeu de Chance 50/50</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        #game-container {
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 600px;
+            border: 2px solid #333;
+            border-radius: 10px;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #score {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px;
+        }
+        #highscores {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 80%;
+        }
+        #highscores th, #highscores td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        #highscores tr:nth-child(even){background-color: #f2f2f2;}
+        #highscores th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Jeu de Chance 50/50</h1>
+        <div id="score">Score actuel : 0</div>
+        <button onclick="play()">JOUER !</button>
+        
+        <h2>Top 10 des Meilleurs Scores</h2>
+        <table id="highscores">
+            <thead>
+                <tr>
+                    <th>Position</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody id="highscores-body">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let currentScore = 0;
+        let highscores = JSON.parse(localStorage.getItem('highscores')) || [];
+
+        function updateScoreDisplay() {
+            document.getElementById('score').textContent = `Score actuel : ${currentScore}`;
+        }
+
+        function updateHighscores() {
+            const tbody = document.getElementById('highscores-body');
+            tbody.innerHTML = '';
+            
+            // Garder seulement les top 10 scores
+            highscores = highscores.sort((a, b) => b - a).slice(0, 10);
+            
+            highscores.forEach((score, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${score}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Sauvegarder dans localStorage
+            localStorage.setItem('highscores', JSON.stringify(highscores));
+        }
+
+        function play() {
+            if (Math.random() < 0.5) {
+                currentScore++;
+                updateScoreDisplay();
+            } else {
+                if (currentScore > 0) {
+                    highscores.push(currentScore);
+                    updateHighscores();
+                }
+                currentScore = 0;
+                updateScoreDisplay();
+            }
+        }
+
+        // Initialiser l'affichage des scores au chargement
+        updateHighscores();
+    </script>
+</body>
+</html>
